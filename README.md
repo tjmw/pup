@@ -20,7 +20,10 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+$ pup --port=8808
+2016-03-19 20:14:33 +0000 | Pup::Server listening on port 8808
+```
 
 ## Development
 
