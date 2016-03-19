@@ -15,7 +15,7 @@ module Pup
     attr_reader :port, :app
 
     def listen
-      puts "Pup::Server listening on port #{port}"
+      log "Pup::Server listening on port #{port}"
 
       Socket.tcp_server_loop(port) do |connection|
         request = parse_http_request(connection)
@@ -23,6 +23,8 @@ module Pup
         env = build_env_from_request(request)
 
         status, headers, body = app.call(env)
+
+        log "method=#{request.method} path=#{request.path} status=#{status}"
 
         response = build_response(status, headers, body)
 
@@ -33,7 +35,7 @@ module Pup
     end
 
     def parse_http_request(connection)
-      return nil
+      Parser.new(connection).read_http_request
     end
 
     def build_env_from_request(request)
@@ -50,6 +52,10 @@ module Pup
 
         #{body.join('')}
       RESPONSE
+    end
+
+    def log(message)
+      puts "#{Time.now} | #{message}"
     end
   end
 end
