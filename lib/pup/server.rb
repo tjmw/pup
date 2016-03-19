@@ -24,13 +24,29 @@ module Pup
 
         status, headers, body = app.call(env)
 
-        log "method=#{request.method} path=#{request.path} status=#{status}"
+        connection.write "HTTP/1.1 #{status} #{Rack::Utils::HTTP_STATUS_CODES[status.to_i]}\r\n"
 
-        response = build_response(status, headers, body)
+        headers.each do |k,v|
+          connection.write "#{k}: #{v}\r\n"
+        end
 
-        connection.write(response)
+        unless headers.has_key?('Content-Length')
+          connection.write "Content-Length: #{body.join('').bytesize}\r\n"
+        end
+
+        if body.length > 0
+          connection.write "\r\n"
+
+          body.each do |b|
+            connection.write b
+          end
+
+          connection.write "\r\n"
+        end
 
         connection.close
+
+        log "method=#{request.method} path=#{request.path} status=#{status}"
       end
     end
 
@@ -40,18 +56,6 @@ module Pup
 
     def build_env_from_request(request)
       return {}
-    end
-
-    def build_response(status, headers, body)
-      formatted_headers = headers.map {|k,v| "#{k}: #{v}" }.join("\r\n")
-
-      <<-RESPONSE.strip_heredoc
-        HTTP/1.1 #{status} #{Rack::Utils::HTTP_STATUS_CODES[status.to_i]}
-        #{formatted_headers}
-        Content-Length: #{body.join('').bytesize}
-
-        #{body.join('')}
-      RESPONSE
     end
 
     def log(message)

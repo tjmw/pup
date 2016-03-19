@@ -1,5 +1,3 @@
-require 'active_support'
-require 'active_support/core_ext'
 require 'http-parser'
 require 'rack/utils'
 require 'socket'
