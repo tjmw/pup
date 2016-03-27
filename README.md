@@ -1,5 +1,7 @@
 # Pup
 
+[![Build Status](https://travis-ci.org/tjmw/pup.svg?branch=master)](https://travis-ci.org/tjmw/pup)
+
 A simple webserver, built as a learning exercise for HTTP and TCP.
 
 ## Installation
