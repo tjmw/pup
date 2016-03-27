@@ -20,7 +20,7 @@ module Pup
       Socket.tcp_server_loop(port) do |connection|
         request = parse_http_request(connection)
 
-        env = build_env_from_request(request)
+        env = request.to_env
 
         status, headers, body = app.call(env)
 
@@ -52,10 +52,6 @@ module Pup
 
     def parse_http_request(connection)
       Parser.new(connection).read_http_request
-    end
-
-    def build_env_from_request(request)
-      return {}
     end
 
     def log(message)
